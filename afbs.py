@@ -50,7 +50,7 @@ for vo in page.find_class('vacant-objects'):
 
         if d: 
             xs.append(d)
-good = { hashy(d): d for d in xs if (d['rooms']==4 or d['rooms']==3) and d['location'] == 'Kämnärsrätten'}
+good = { hashy(d): d for d in xs if 'rooms' in d and (d['rooms']==4 or d['rooms']==3) and d['location'] == 'Kämnärsrätten'}
 
 def update_cache(good):
     current_objects = {}
