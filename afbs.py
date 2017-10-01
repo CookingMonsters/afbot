@@ -6,7 +6,7 @@ import json
 from datetime import date
 import sys
 
-if len(sys.argv)  < 3:
+if len(sys.argv)  < 4:
     print('Use arguments: python3 afbot.py botusername botpassword mailrecipient1 [mailrecipient2]')
     exit(0)
 
@@ -18,11 +18,8 @@ if len(sys.argv) == 5:
 else:
     recipient = sys.argv[3]
 
-
-
-
 def hashy(item):
-        return ''.join([str(item[_]) for _ in sorted(item.keys())])
+    return ''.join([str(item[_]) for _ in sorted(item.keys())])
 
 
 print('Looking for a new home')
@@ -105,7 +102,6 @@ def send_email(user, pwd, recipient, subject, body):
         print("failed to send mail")
 
 
-
 def pretty_print(apt):
     return "There's an apartment with " + str(apt['rooms']) + " rooms with move in date  " + str(apt['inflytt']) + " and last day to apply: " + str(apt['ansokan']) + "."  
 def write_mail(apt_list):
@@ -122,8 +118,5 @@ if changed:
 
 else: 
     print('Same old, same old')
-
-
-    
 
 driver.close()
