@@ -1,11 +1,12 @@
 from selenium import webdriver
+from pyvirtualdisplay import Display
 import re
 from html.parser import HTMLParser
 import lxml.html
 import json
 from datetime import date
 import sys
-
+sys.path.append('/usr/local/bin/')
 if len(sys.argv)  < 4:
     print('Use arguments: python3 afbot.py botusername botpassword mailrecipient1 [mailrecipient2]')
     exit(0)
@@ -19,11 +20,15 @@ else:
     recipient = sys.argv[3]
 
 def hashy(item):
-    return ''.join([str(item[_]) for _ in sorted(item.keys())])
+    return ';'.join([str(item[k]) for k in sorted(item.keys())])
 
 
 print('Looking for a new home')
-driver = webdriver.Chrome()
+
+display = Display(visible=0, size=(800, 600))
+display.start()
+
+driver = webdriver.PhantomJS()
 driver.get("https://www.afbostader.se/lediga-bostader/")
 page = lxml.html.fromstring(str(driver.page_source))
 xs = []
@@ -34,7 +39,7 @@ for vo in page.find_class('vacant-objects'):
             for x in shortd.xpath("div[@class]/h3/a[@href]/span[@class]/text()"):
                 try:
                     xx = float(x)
-                    if int(xx) == xx:
+                    if xx < 10:
                         d['rooms'] = int(xx)
                     else:
                         d['sqrmtrs'] = xx
@@ -50,9 +55,11 @@ for vo in page.find_class('vacant-objects'):
 
         if d: 
             xs.append(d)
-good = { hashy(d): d for d in xs if 'rooms' in d and (d['rooms']==4 or d['rooms']==3) and d['location'] == 'Kämnärsrätten'}
+good = { hashy(d): d for d in xs if 'sqrmtrs' in d and d['sqrmtrs'] >= 60.0}
 
 def update_cache(good):
+    if not good:
+        return (False, [])
     current_objects = {}
     today = str(date.today())
     filename = 'ignore.txt'
@@ -103,7 +110,12 @@ def send_email(user, pwd, recipient, subject, body):
 
 
 def pretty_print(apt):
-    return "There's an apartment with " + str(apt['rooms']) + " rooms with move in date  " + str(apt['inflytt']) + " and last day to apply: " + str(apt['ansokan']) + "."  
+    return "There's an apartment at {} with {} rooms with move in date {} and last day to apply: {}.".format(
+	str(apt['location']),
+	str(apt['rooms']),
+	str(apt['inflytt']),
+	str(apt['ansokan']))
+
 def write_mail(apt_list):
     return '\n'.join(pretty_print(a) for a in apt_list.values())
 
