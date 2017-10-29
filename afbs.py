@@ -22,7 +22,6 @@ else:
 def hashy(item):
     return ';'.join([str(item[k]) for k in sorted(item.keys())])
 
-
 print('Looking for a new home')
 
 display = Display(visible=0, size=(800, 600))
@@ -44,14 +43,14 @@ for vo in page.find_class('vacant-objects'):
                     else:
                         d['sqrmtrs'] = xx
                 except:
-                    d['desc'] = x
+                    d['desc'] = str(x)
             for x in shortd.xpath("div[@class]/h4/span[@class]/text()"):
-                d['location'] = x
+                d['location'] = str(x)
         for dt in hidden.find_class('move-in-date-reserve-until-date'):
             for x in dt.xpath("div[@class]/div[@class]/div[@class]/h6[@class]/text()"):
-                d['inflytt'] = x
+                d['inflytt'] = str(x)
             for x in dt.xpath("div[@class]/div[@class]/div[@class]/h5/text()"):
-                d['ansokan'] = x
+                d['ansokan'] = str(x)
 
         if d: 
             xs.append(d)
@@ -95,8 +94,7 @@ def send_email(user, pwd, recipient, subject, body):
     TEXT = body
 
     # Prepare actual message
-    message = """From: %s\nTo: %s\nSubject: %s\n\n%s
-    """ % (FROM, ", ".join(TO), SUBJECT, TEXT)
+    message = 'From: {}\nTo: {}\nSubject: {}\n\n{}'.format(FROM, ", ".join(TO), SUBJECT, TEXT).encode('utf-8')
     try:
         server = smtplib.SMTP("smtp.gmail.com", 587)
         server.ehlo()
@@ -110,7 +108,8 @@ def send_email(user, pwd, recipient, subject, body):
 
 
 def pretty_print(apt):
-    return "There's an apartment at {} with {} rooms with move in date {} and last day to apply: {}.".format(
+    return "There's an {}-m2 apartment at {} with {} rooms with move in date {} and last day to apply: {}.".format(
+	str(apt['sqrmtrs']),
 	str(apt['location']),
 	str(apt['rooms']),
 	str(apt['inflytt']),
