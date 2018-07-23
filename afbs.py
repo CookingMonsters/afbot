@@ -8,8 +8,8 @@ from datetime import date
 import sys
 sys.path.append('/usr/local/bin/')
 if len(sys.argv)  < 4:
-    print('Use arguments: python3 afbot.py botusername botpassword mailrecipient1 [mailrecipient2]')
-    exit(0)
+    print('Use arguments: python3 afbs.py $botusername $botpassword $mailrecipient1 [$mailrecipient2]')
+    exit(1)
 
 user = sys.argv[1]
 pwd = sys.argv[2]
